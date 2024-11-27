@@ -894,6 +894,12 @@ H5F__accum_free(H5F_shared_t *f_sh, H5FD_mem_t H5_ATTR_UNUSED type, haddr_t addr
                 H5_CHECKED_ASSIGN(overlap_size, size_t, (addr + size) - accum->loc, haddr_t);
                 new_accum_size = accum->size - overlap_size;
 
+                /* Ensure overlap_size does not exceed accum->size */
+                if (overlap_size > accum->size) {
+                    accum->loc   = HADDR_UNDEF;
+                    accum->size  = 0;
+                    accum->dirty = FALSE;
+                } else {
                 /* Move the accumulator buffer information to eliminate the freed block */
                 HDmemmove(accum->buf, accum->buf + overlap_size, new_accum_size);
 
@@ -917,6 +923,7 @@ H5F__accum_free(H5F_shared_t *f_sh, H5FD_mem_t H5_ATTR_UNUSED type, haddr_t addr
                             accum->dirty = FALSE;
                     } /* end else */
                 }     /* end if */
+            }         /* end else */
             }         /* end else */
         }             /* end if */
         /* Block to free must start within the accumulator */
