@@ -158,6 +158,10 @@ H5O__chunk_protect(H5F_t *f, H5O_t *oh, unsigned idx)
     HDassert(oh);
     HDassert(idx < oh->nchunks);
 
+    /* Ensure idx is within bounds */
+    if (idx >= oh->nchunks)
+        HGOTO_ERROR(H5E_OHDR, H5E_BADVALUE, NULL, "chunk index out of bounds")
+
     /* Check for protecting first chunk */
     if (0 == idx) {
         /* Create new "fake" chunk proxy for first chunk */

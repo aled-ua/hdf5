@@ -222,6 +222,9 @@ H5O__cont_delete(H5F_t *f, H5O_t *open_oh, void *_mesg)
     HDassert(f);
     HDassert(mesg);
 
+    if (mesg->chunkno >= open_oh->nchunks)
+        HGOTO_ERROR(H5E_OHDR, H5E_BADVALUE, FAIL, "chunk number out of bounds")
+
     /* Notify the cache that the chunk has been deleted */
     /* (releases the space for the chunk) */
     if (H5O__chunk_delete(f, open_oh, mesg->chunkno) < 0)
