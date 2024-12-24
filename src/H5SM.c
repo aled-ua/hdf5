@@ -1540,8 +1540,7 @@ H5SM_delete(H5F_t *f, H5O_t *open_oh, H5O_shared_t *sh_mesg)
 
     /* Validate the SOHM address */
     if (!H5_addr_defined(H5F_SOHM_ADDR(f))) {
-        HGOTO_ERROR(H5E_SOHM, H5E_BADVALUE, FAIL,
-                    "SOHM address is invalid or uninitialized");
+        HGOTO_ERROR(H5E_SOHM, H5E_BADVALUE, FAIL, "SOHM address is invalid or uninitialized");
     }
 
     /* Get message type */
