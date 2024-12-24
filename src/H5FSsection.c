@@ -931,6 +931,9 @@ H5FS__sect_link_size(H5FS_sinfo_t *sinfo, const H5FS_section_class_t *cls, H5FS_
 
     /* Determine correct bin which holds items of the section's size */
     bin = H5VM_log2_gen(sect->size);
+    /* Ensure bin index is within bounds */
+    if (bin >= sinfo->nbins)
+        HGOTO_ERROR(H5E_FSPACE, H5E_OVERFLOW, FAIL, "bin index out of bounds");
     assert(bin < sinfo->nbins);
     if (sinfo->bins[bin].bin_list == NULL) {
         if (NULL == (sinfo->bins[bin].bin_list = H5SL_create(H5SL_TYPE_HSIZE, NULL)))
