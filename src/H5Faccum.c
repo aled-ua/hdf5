@@ -883,7 +883,8 @@ H5F__accum_free(H5F_shared_t *f_sh, H5FD_mem_t H5_ATTR_UNUSED type, haddr_t addr
 
                 /* Ensure overlap_size and new_accum_size are within bounds */
                 if (overlap_size > accum->alloc_size || new_accum_size > accum->alloc_size) {
-                    HGOTO_ERROR(H5E_ARGS, H5E_BADVALUE, FAIL, "calculated sizes exceed allocated buffer size");
+                    HGOTO_ERROR(H5E_ARGS, H5E_BADVALUE, FAIL,
+                                "calculated sizes exceed allocated buffer size");
                 }
 
                 /* Move the accumulator buffer information to eliminate the freed block */
