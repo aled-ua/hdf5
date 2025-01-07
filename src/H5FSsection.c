@@ -932,6 +932,10 @@ H5FS__sect_link_size(H5FS_sinfo_t *sinfo, const H5FS_section_class_t *cls, H5FS_
     /* Determine correct bin which holds items of the section's size */
     bin = H5VM_log2_gen(sect->size);
     assert(bin < sinfo->nbins);
+    /* Check if bin is within valid range */
+    if (bin >= sinfo->nbins)
+        HGOTO_ERROR(H5E_FSPACE, H5E_BADVALUE, FAIL, "bin index out of range");
+
     if (sinfo->bins[bin].bin_list == NULL) {
         if (NULL == (sinfo->bins[bin].bin_list = H5SL_create(H5SL_TYPE_HSIZE, NULL)))
             HGOTO_ERROR(H5E_FSPACE, H5E_CANTCREATE, FAIL, "can't create skip list for free space nodes");
