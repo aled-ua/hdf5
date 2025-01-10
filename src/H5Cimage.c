@@ -116,7 +116,7 @@
 /* Helper routines */
 static size_t H5C__cache_image_block_entry_header_size(const H5F_t *f);
 static size_t H5C__cache_image_block_header_size(const H5F_t *f);
-static herr_t H5C__decode_cache_image_header(const H5F_t *f, H5C_t *cache_ptr, const uint8_t **buf);
+static herr_t H5C__decode_cache_image_header(const H5F_t *f, H5C_t *cache_ptr, const uint8_t **buf, size_t buf_size);
 #ifndef NDEBUG /* only used in assertions */
 static herr_t H5C__decode_cache_image_entry(const H5F_t *f, const H5C_t *cache_ptr, const uint8_t **buf,
                                             unsigned entry_num);
@@ -297,7 +297,7 @@ H5C__construct_cache_image_buffer(H5F_t *f, H5C_t *cache_ptr)
         /* needed for sanity checks */
         fake_cache_ptr->image_len = cache_ptr->image_len;
         q                         = (const uint8_t *)cache_ptr->image_buffer;
-        status                    = H5C__decode_cache_image_header(f, fake_cache_ptr, &q);
+        status                    = H5C__decode_cache_image_header(f, fake_cache_ptr, &q, cache_ptr->image_len + 1);
         assert(status >= 0);
 
         assert(NULL != p);
@@ -1267,7 +1267,7 @@ H5C__cache_image_block_header_size(const H5F_t *f)
  *-------------------------------------------------------------------------
  */
 static herr_t
-H5C__decode_cache_image_header(const H5F_t *f, H5C_t *cache_ptr, const uint8_t **buf)
+H5C__decode_cache_image_header(const H5F_t *f, H5C_t *cache_ptr, const uint8_t **buf, size_t buf_size)
 {
     uint8_t        version;
     uint8_t        flags;
@@ -1288,7 +1288,7 @@ H5C__decode_cache_image_header(const H5F_t *f, H5C_t *cache_ptr, const uint8_t *
     p = *buf;
 
     /* Ensure buffer has enough data for signature comparison */
-    if (H5_IS_BUFFER_OVERFLOW(p, H5C__MDCI_BLOCK_SIGNATURE_LEN, *buf + cache_ptr->image_len))
+    if (H5_IS_BUFFER_OVERFLOW(p, H5C__MDCI_BLOCK_SIGNATURE_LEN, *buf + buf_size))
         HGOTO_ERROR(H5E_CACHE, H5E_OVERFLOW, FAIL, "Insufficient buffer size for signature");
 
     /* Check signature */
@@ -2390,7 +2390,7 @@ H5C__reconstruct_cache_contents(H5F_t *f, H5C_t *cache_ptr)
 
     /* Decode metadata cache image header */
     p = (uint8_t *)cache_ptr->image_buffer;
-    if (H5C__decode_cache_image_header(f, cache_ptr, &p) < 0)
+    if (H5C__decode_cache_image_header(f, cache_ptr, &p, cache_ptr->image_len + 1) < 0)
         HGOTO_ERROR(H5E_CACHE, H5E_CANTDECODE, FAIL, "cache image header decode failed");
     assert((size_t)(p - (uint8_t *)cache_ptr->image_buffer) < cache_ptr->image_len);
 
