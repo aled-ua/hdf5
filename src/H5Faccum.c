@@ -883,7 +883,7 @@ H5F__accum_free(H5F_shared_t *f_sh, H5FD_mem_t H5_ATTR_UNUSED type, haddr_t addr
 
                 /* Ensure that the memmove operation won't overflow past the buffer's allocated size */
                 if (H5_IS_BUFFER_OVERFLOW(accum->buf + overlap_size, new_accum_size,
-                                          accum->buf + accum->alloc_size)) {
+                                          accum->buf + accum->alloc_size - 1)) {
                     HGOTO_ERROR(H5E_ARGS, H5E_BADVALUE, FAIL, "memmove operation would overflow buffer");
                 }
                 /* Move the accumulator buffer information to eliminate the freed block */
